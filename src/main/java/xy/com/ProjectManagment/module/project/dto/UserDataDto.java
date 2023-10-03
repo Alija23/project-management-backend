@@ -1,4 +1,4 @@
-package xy.com.ProjectManagment.User.Dto;
+package xy.com.ProjectManagment.module.project.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

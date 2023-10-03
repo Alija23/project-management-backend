@@ -1,4 +1,4 @@
-package xy.com.ProjectManagment.User.Entity;
+package xy.com.ProjectManagment.module.project.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +32,9 @@ public class UserData implements UserDetails {
     @Column(name="password")
     private String password;
 
+    // dodati one to one za role
+
+    // dodati one to one za board
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

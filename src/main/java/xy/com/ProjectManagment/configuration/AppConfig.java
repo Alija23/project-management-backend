@@ -1,4 +1,4 @@
-package xy.com.ProjectManagment.Security;
+package xy.com.ProjectManagment.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

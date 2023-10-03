@@ -1,7 +1,7 @@
-package xy.com.ProjectManagment.User.Repository;
+package xy.com.ProjectManagment.module.project.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import xy.com.ProjectManagment.User.Entity.UserData;
+import xy.com.ProjectManagment.module.project.entity.UserData;
 
 import java.util.Optional;
 

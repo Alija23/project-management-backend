@@ -1,9 +1,9 @@
-package xy.com.ProjectManagment.Shared;
+package xy.com.ProjectManagment.shared;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import xy.com.ProjectManagment.User.Entity.UserData;
-import xy.com.ProjectManagment.User.Service.UserDataServiceImpl;
+import xy.com.ProjectManagment.module.project.entity.UserData;
+import xy.com.ProjectManagment.module.project.service.UserDataServiceImpl;
 
 @Component
 public class CommandLinerRunnerImpl implements CommandLineRunner {

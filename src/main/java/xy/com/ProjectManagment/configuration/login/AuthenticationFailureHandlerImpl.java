@@ -1,4 +1,4 @@
-package xy.com.ProjectManagment.Security.Login;
+package xy.com.ProjectManagment.configuration.login;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

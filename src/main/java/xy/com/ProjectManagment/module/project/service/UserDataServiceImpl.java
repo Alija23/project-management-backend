@@ -1,11 +1,10 @@
-package xy.com.ProjectManagment.User.Service;
+package xy.com.ProjectManagment.module.project.service;
 
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import xy.com.ProjectManagment.User.Entity.UserData;
-import xy.com.ProjectManagment.User.Repository.UserDataRepository;
+import xy.com.ProjectManagment.module.project.entity.UserData;
+import xy.com.ProjectManagment.module.project.repository.UserDataRepository;
 
 import java.util.Optional;
 
