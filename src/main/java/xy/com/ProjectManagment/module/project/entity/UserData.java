@@ -32,9 +32,12 @@ public class UserData implements UserDetails {
     @Column(name="password")
     private String password;
 
-    // dodati one to one za role
+    @ManyToOne(cascade =
+            {CascadeType.PERSIST, CascadeType.MERGE,CascadeType.DETACH, CascadeType.REFRESH}
+    )
+    @JoinColumn(name="role_id")
+    private UserRole userRole;
 
-    // dodati one to one za board
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,5 +1,6 @@
 package xy.com.ProjectManagment.module.project.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,11 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
         return userData.get();
     }
 
+    @Transactional
     public void save(UserData userData) {
+
+
         userDataRepository.save(userData);
+
     }
 }

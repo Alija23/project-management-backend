@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name="task")
 @Getter
@@ -15,16 +17,23 @@ import lombok.Setter;
 public class Task {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="r_id")
+    @Column(name="id")
     private int id;
 
-    @Column(name="taskname")
-    private String taskname;
+    @Column(name="title")
+    private String title;
 
     @Column(name="description")
     private String description;
 
-    @Column(name="userboard")
-    private String userboard;
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,CascadeType.DETACH, CascadeType.REFRESH}
+    )
+    @JoinTable(
+            name="user_board_task",
+            joinColumns=@JoinColumn(name="task_id"),
+            inverseJoinColumns = @JoinColumn(name="user_board_id")
+    )
+    private List<UserBoard> userBoard;
 
 }
