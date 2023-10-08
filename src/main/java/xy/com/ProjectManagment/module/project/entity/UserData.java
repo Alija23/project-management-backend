@@ -1,5 +1,7 @@
 package xy.com.ProjectManagment.module.project.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import xy.com.ProjectManagment.module.project.model.RegisterModel;
 
 import java.util.Collection;
 
@@ -16,6 +19,10 @@ import java.util.Collection;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id"
+)
 public class UserData implements UserDetails {
 
     @Id
@@ -23,10 +30,10 @@ public class UserData implements UserDetails {
     @Column(name="r_id")
     private int id;
 
-    @Column(name="username")
+    @Column(name="username", unique = true)
     private String username;
 
-    @Column(name="email")
+    @Column(name="email", unique = true)
     private String email;
 
     @Column(name="password")
@@ -38,7 +45,12 @@ public class UserData implements UserDetails {
     @JoinColumn(name="role_id")
     private UserRole userRole;
 
-
+    public UserData(RegisterModel registerModel) {
+        setUsername(registerModel.getUsername());
+        setEmail(registerModel.getEmail());
+        setPassword(registerModel.getPassword());
+        setUserRole(registerModel.getUserRole());
+   }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
@@ -46,7 +58,7 @@ public class UserData implements UserDetails {
 
     @Override
     public String getUsername() {
-        return null;
+        return username;
     }
 
     @Override
@@ -66,6 +78,6 @@ public class UserData implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }
