@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,6 +17,5 @@ public class ErrorMessage {
     private Date timestamp;
     private String message;
     private String description;
-
-
+    private List<FormElementError> status;
 }
