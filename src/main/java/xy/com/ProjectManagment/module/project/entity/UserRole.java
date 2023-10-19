@@ -44,5 +44,4 @@ public class UserRole {
         userData.add(tmpUserData);
         tmpUserData.setUserRole(this);
     }
-    // role ima relaciju sa userdata one to many
 }

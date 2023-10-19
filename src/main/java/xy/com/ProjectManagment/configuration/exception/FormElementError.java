@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FormElementError {
-    private String name;
+    private String fieldName;
     private String errorMessage;
 }

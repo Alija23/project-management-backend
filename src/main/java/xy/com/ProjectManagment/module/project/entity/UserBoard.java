@@ -20,7 +20,6 @@ public class UserBoard {
     @Column(name="id")
     private int id;
 
-
     @OneToOne
     @JoinColumn(name="user_data_id")
     private UserData userData;
