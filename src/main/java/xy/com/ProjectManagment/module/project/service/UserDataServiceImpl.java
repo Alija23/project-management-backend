@@ -2,10 +2,12 @@ package xy.com.ProjectManagment.module.project.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,34 +34,22 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class UserDataServiceImpl implements UserDataService, UserDetailsService {
     private UserDataRepository userDataRepository;
     private UserBoardRepository userBoardRepository;
     private BCryptPasswordEncoder encoder;
     private RoleServiceImpl roleService;
     private TaskRepository taskRepository;
-    public UserDataServiceImpl(
-            UserDataRepository userDataRepository,
-            RoleServiceImpl roleService,
-            BCryptPasswordEncoder encoder,
-            UserBoardRepository userBoardRepository,
-            TaskRepository taskRepository
-    ) {
-        this.userDataRepository = userDataRepository;
-        this.encoder = encoder;
-        this.roleService = roleService;
-        this.userBoardRepository = userBoardRepository;
-        this.taskRepository = taskRepository;
-    }
+
     @Override
     public UserData loadUserByUsername(String username) throws UsernameNotFoundException {
         List<FormElementError> formElementError = new ArrayList<>();
-        Optional<UserData> userData;
-        userData = userDataRepository.findByUsername(username);
+        Optional<UserData> userData = userDataRepository.findByUsername(username);
         if (userData.isEmpty()) {
             FormElementError exception = new FormElementError("username", "notFound");
             formElementError.add(exception);
-            throw new ResourceNotFoundException("User with username: " + username + " doesnt exist", formElementError);
+            throw new ResourceNotFoundException("User with usernameboggg: " + username + " doesnt exist", formElementError);
         }
         return userData.get();
     }
@@ -92,6 +82,7 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
             }
             registerModel.setPassword(encoder.encode(registerModel.getPassword()));
             userBoard.setUserData(userData);
+            userData.setPassword(encoder.encode(userData.getPassword()));
             userDataRepository.save(userData);
             userBoardRepository.save(userBoard);
         } catch (DataIntegrityViolationException exception) {

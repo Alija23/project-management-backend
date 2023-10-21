@@ -1,5 +1,6 @@
 package xy.com.ProjectManagment.configuration;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,31 +19,20 @@ import xy.com.ProjectManagment.module.project.service.UserDataServiceImpl;
 
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor
 public class SecurityConfiguration {
     private UserDataServiceImpl userDataService;
     private AuthenticationFailureHandlerImpl authenticationFailureHandler;
 
     private AuthenticationSuccessHandlerImpl authenticationSuccessHandler;
     private BCryptPasswordEncoder encoder;
-    public SecurityConfiguration(
-            UserDataServiceImpl userDataService,
-            AuthenticationSuccessHandlerImpl authenticationSuccessHandler,
-            AuthenticationFailureHandlerImpl authenticationFailureHandler,
-            BCryptPasswordEncoder encoder
-    ) {
-        this.userDataService = userDataService;
-        this.authenticationFailureHandler = authenticationFailureHandler;
-        this.authenticationSuccessHandler = authenticationSuccessHandler;
-        this.encoder = encoder;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(CsrfConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/api/user-data-admin/**").permitAll()
-                        .requestMatchers("api/**").permitAll()
-                        .requestMatchers("/api/admin").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/user-data-admin/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .formLogin(form ->
                         form
@@ -66,7 +56,7 @@ public class SecurityConfiguration {
     @Autowired
     public void configureGlobal(
             AuthenticationManagerBuilder builder,
-            UserDetailsService userDetailsService
+            UserDataServiceImpl userDetailsService
     ) throws Exception {
         builder
                 .userDetailsService(userDetailsService)

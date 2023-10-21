@@ -8,9 +8,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import xy.com.ProjectManagment.module.project.model.RegisterModel;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Entity
@@ -51,9 +53,19 @@ public class UserData implements UserDetails {
         setPassword(registerModel.getPassword());
         setUserRole(registerModel.getUserRole());
    }
+
+    public UserData(UserData userData) {
+        this.userRole = userData.getUserRole();
+        this.username = userData.getUsername();
+        this.password = userData.getPassword();
+        this.email = userData.getEmail();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(userRole.getTitle()));
+        return authorities;
     }
 
     @Override
