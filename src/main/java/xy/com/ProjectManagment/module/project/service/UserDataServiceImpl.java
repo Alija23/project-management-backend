@@ -53,11 +53,13 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
     }
     @Override
     public UserData loadUserByUsername(String username) throws UsernameNotFoundException {
-
+        List<FormElementError> formElementError = new ArrayList<>();
         Optional<UserData> userData;
         userData = userDataRepository.findByUsername(username);
         if (userData.isEmpty()) {
-            throw new ResourceNotFoundException("User with username: " + username + " doesnt exist");
+            FormElementError exception = new FormElementError("username", "notFound");
+            formElementError.add(exception);
+            throw new ResourceNotFoundException("User with username: " + username + " doesnt exist", formElementError);
         }
         return userData.get();
     }
@@ -129,6 +131,37 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
             userBoardRepository.deleteById(userData1.getId());
             userDataRepository.delete(userData1);
         }
+    }
+
+    @Override
+    @Transactional
+    public UserDataBoardTaskModel updateUser(UserDataBoardTaskModel userDataBoardTaskModel) {
+        Optional<UserData> userData = userDataRepository.findByUsername(userDataBoardTaskModel.getUserDataDto().getUsername());
+        Optional<UserBoard> userBoard = userBoardRepository.findById(userData.get().getId());
+        if (userData.isEmpty()) {
+            throw new UsernameNotFoundException("user not found");
+        }
+        UserData userData1 = userData.get();
+        if (userData1.getUsername() != userDataBoardTaskModel.getUserDataDto().getUsername()) {
+            userData1.setUsername(userDataBoardTaskModel.getUserDataDto().getUsername());
+        }
+        if (userData1.getEmail() != userDataBoardTaskModel.getUserDataDto().getEmail()) {
+            userData1.setEmail(userDataBoardTaskModel.getUserDataDto().getEmail());
+        }
+        if (userData1.getUserRole().getTitle() != userDataBoardTaskModel.getUserDataDto().getRole().getTitle()) {
+            userData1.getUserRole().setTitle(userDataBoardTaskModel.getUserDataDto().getRole().getTitle());
+        }
+        userDataRepository.save(userData1);
+
+        for (Task task: userDataBoardTaskModel.getTask()) {
+            Optional<Task> tmpTask = taskRepository.findByTitle(task.getTitle());
+            if (tmpTask.isPresent()) {
+                tmpTask.get().setDescription(task.getDescription());
+                taskRepository.save(tmpTask.get());
+            }
+        }
+
+        return userDataBoardTaskModel;
     }
 
 

@@ -12,4 +12,5 @@ public interface UserDataService {
     List<UserDataBoardTaskModel> getAllUserDataRoleTask();
 
     void deleteUserDataByUsername(String username);
+    UserDataBoardTaskModel updateUser(UserDataBoardTaskModel userDataBoardTaskModel);
 }

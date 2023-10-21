@@ -36,4 +36,8 @@ public class Task {
     )
     private List<UserBoard> userBoard;
 
+    public Task(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
 }

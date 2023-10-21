@@ -34,6 +34,4 @@ public class UserBoard {
     )
     private List<Task> task;
 
-
-
 }

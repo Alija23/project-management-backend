@@ -13,4 +13,11 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
             "JOIN ub.task t " +
             "WHERE t.id = :userId")
     Optional<List<Task>> getTaskByUserId(@Param("userId") Long userId);
+
+    Optional<Task> findByTitle(String title);
+    @Query(value = "SELECT t.* FROM user_data AS u " +
+            "INNER JOIN user_board_task AS ubt ON u.r_id = ubt.user_board_id " +
+            "INNER JOIN task AS t ON ubt.task_id = t.id " +
+            "WHERE u.username = :username", nativeQuery = true)
+    Optional<List<Task>> findTasksByUsername(@Param("username") String username);
 }
