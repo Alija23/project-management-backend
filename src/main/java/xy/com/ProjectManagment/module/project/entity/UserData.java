@@ -86,4 +86,5 @@ public class UserData implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

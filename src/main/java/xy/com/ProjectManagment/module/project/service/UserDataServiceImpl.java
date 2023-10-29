@@ -1,18 +1,16 @@
 package xy.com.ProjectManagment.module.project.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import xy.com.ProjectManagment.configuration.exception.ErrorMessage;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import xy.com.ProjectManagment.configuration.exception.FormElementError;
 import xy.com.ProjectManagment.configuration.exception.ResourceNotFoundException;
 import xy.com.ProjectManagment.configuration.exception.UserFormInputException;
@@ -23,7 +21,6 @@ import xy.com.ProjectManagment.module.project.entity.UserData;
 import xy.com.ProjectManagment.module.project.entity.UserRole;
 import xy.com.ProjectManagment.module.project.model.RegisterModel;
 import xy.com.ProjectManagment.module.project.model.UserDataBoardTaskModel;
-import xy.com.ProjectManagment.module.project.repository.RoleRepository;
 import xy.com.ProjectManagment.module.project.repository.TaskRepository;
 import xy.com.ProjectManagment.module.project.repository.UserBoardRepository;
 import xy.com.ProjectManagment.module.project.repository.UserDataRepository;
@@ -41,7 +38,6 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
     private BCryptPasswordEncoder encoder;
     private RoleServiceImpl roleService;
     private TaskRepository taskRepository;
-
     @Override
     public UserData loadUserByUsername(String username) throws UsernameNotFoundException {
         List<FormElementError> formElementError = new ArrayList<>();
@@ -64,7 +60,7 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
 
     @Override
     @Transactional
-    public UserDataDto saveUser(RegisterModel registerModel) {
+    public UserDataDto createAdminAccount(RegisterModel registerModel) {
         UserRole userRole = roleService.getUserRoleByTitle(registerModel.getUserRole().getTitle());
         registerModel.setUserRole(userRole);
         UserBoard userBoard = new UserBoard();
@@ -163,5 +159,42 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
         return userDataBoardTaskModel;
     }
 
+    @Override
+    @Transactional
+    public UserDataDto createAccount(@Valid RegisterModel registerModel, BindingResult bindingResult) {
+        List<FormElementError> listFormElementError = new ArrayList<>();
+        if (bindingResult.hasErrors()) {
+            for (FieldError fieldError : bindingResult.getFieldErrors()) {
+                FormElementError formElementError = new FormElementError();
+                formElementError.setFieldName(fieldError.getField());
+                formElementError.setErrorMessage(fieldError.getDefaultMessage());
+                listFormElementError.add(formElementError);
+            }
+            if (registerModel.getConfirmPassword() != registerModel.getPassword()) {
+                FormElementError formElementError = new FormElementError();
+                formElementError.setFieldName("password");
+                formElementError.setErrorMessage("Passwords do not match");
+                listFormElementError.add(formElementError);
+                Object principalUserData = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                if (principalUserData == null || ( !Objects.equals(((UserData) principalUserData).getUserRole().getTitle(), "ADMIN") && Objects.equals(registerModel.getUserRole().getTitle(), "ADMIN")) ) {
+                    FormElementError formElementError1 = new FormElementError();
+                    formElementError.setFieldName("userRole");
+                    formElementError.setErrorMessage("Admin privilegies");
+                    listFormElementError.add(formElementError1);
+                }
+            }
+            throw new UserFormInputException("error", listFormElementError);
+        }
+        UserData userData = new UserData(registerModel);
+        UserRole userRole = roleService.getUserRoleByTitle(registerModel.getUserRole().getTitle());
+        userData.setUserRole(userRole);
+        UserBoard userBoard = new UserBoard();
+        userBoard.setUserData(userData);
+        userData.setPassword(encoder.encode(registerModel.getPassword()));
+        userDataRepository.save(userData);
+        userBoardRepository.save(userBoard);
+        UserDataDto userDataDto = new UserDataDto(userData);
+        return userDataDto;
+    }
 
 }

@@ -35,7 +35,7 @@ public class UserDataAdminController {
     }
     @PostMapping("/save-user")
     public ResponseEntity<UserDataDto> saveAdmin(@RequestBody RegisterModel adminModel) {
-          userDataService.saveUser(adminModel);
+          userDataService.createAdminAccount(adminModel);
           UserData userData = new UserData(adminModel);
           UserDataDto userDataDto = new UserDataDto(userData);
           return ResponseEntity.ok(userDataDto);
