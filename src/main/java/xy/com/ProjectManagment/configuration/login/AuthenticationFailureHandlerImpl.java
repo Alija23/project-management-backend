@@ -10,9 +10,15 @@ import lombok.Setter;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
+import xy.com.ProjectManagment.configuration.exception.FormElementError;
+import xy.com.ProjectManagment.configuration.exception.ResourceNotFoundException;
+import xy.com.ProjectManagment.configuration.exception.UserFormInputException;
 import xy.com.ProjectManagment.module.project.dto.UserDataDto;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 @Getter
 @Setter
@@ -22,11 +28,11 @@ public class AuthenticationFailureHandlerImpl implements AuthenticationFailureHa
     private ObjectMapper objectMapper;
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        UserDataDto userDataDto = new UserDataDto();
+        List<FormElementError> formElementError = new ArrayList<>();
+        FormElementError ex = new FormElementError("username", "notFound");
+        formElementError.add(ex);
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        String username = request.getParameter("username");
-        userDataDto.setUsername(username);
-        String objectJackson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(userDataDto);
+        String objectJackson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(formElementError);
         response.getWriter().write(objectJackson);
         response.flushBuffer();
     }

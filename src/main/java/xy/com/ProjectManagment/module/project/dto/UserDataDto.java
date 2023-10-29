@@ -26,4 +26,6 @@ public class UserDataDto {
         role = new RoleDto(userData.getUserRole());
     }
 
+
+
 }

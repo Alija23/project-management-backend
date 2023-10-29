@@ -26,6 +26,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-security:'
 	implementation 'org.springframework.security:spring-security-core:6.0.3'
+	implementation 'ch.qos.logback:logback-classic'
+	implementation 'org.slf4j:slf4j-api'
 }
 
 tasks.named('test') {

@@ -33,13 +33,13 @@ public class UserDataAdminController {
         this.userDataRepository = userDataRepository;
         this.taskService = taskService;
     }
-    @PostMapping("/save-admin")
+    @PostMapping("/save-user")
     public ResponseEntity<UserDataDto> saveAdmin(@RequestBody RegisterModel adminModel) {
-       userDataService.saveUser(adminModel);
-       UserData userData = new UserData(adminModel);
-       UserDataDto userDataDto = new UserDataDto(userData);
-       return ResponseEntity.ok(userDataDto);
-    }
+          userDataService.saveUser(adminModel);
+          UserData userData = new UserData(adminModel);
+          UserDataDto userDataDto = new UserDataDto(userData);
+          return ResponseEntity.ok(userDataDto);
+      }
 
     @GetMapping("/get-admin")
     public ResponseEntity<List<UserDataBoardTaskModel>> getAdmin() {

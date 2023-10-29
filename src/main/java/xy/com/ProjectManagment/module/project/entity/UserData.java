@@ -54,12 +54,6 @@ public class UserData implements UserDetails {
         setUserRole(registerModel.getUserRole());
    }
 
-    public UserData(UserData userData) {
-        this.userRole = userData.getUserRole();
-        this.username = userData.getUsername();
-        this.password = userData.getPassword();
-        this.email = userData.getEmail();
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -75,17 +69,17 @@ public class UserData implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override

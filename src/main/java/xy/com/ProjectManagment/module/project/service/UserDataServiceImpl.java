@@ -47,10 +47,18 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
         List<FormElementError> formElementError = new ArrayList<>();
         Optional<UserData> userData = userDataRepository.findByUsername(username);
         if (userData.isEmpty()) {
+        try {
             FormElementError exception = new FormElementError("username", "notFound");
             formElementError.add(exception);
-            throw new ResourceNotFoundException("User with usernameboggg: " + username + " doesnt exist", formElementError);
+            throw new ResourceNotFoundException("User with username: " + username + " not found", formElementError);
+        } catch (ResourceNotFoundException ex) {
+           UserData userData1 = new UserData();
+           userData1.setUsername("");
+           userData1.setPassword(encoder.encode("dsagsd"));
+           return userData1;
         }
+        }
+
         return userData.get();
     }
 
