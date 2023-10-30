@@ -20,7 +20,7 @@ public class Task {
     @Column(name="id")
     private int id;
 
-    @Column(name="title", unique = true)
+    @Column(name="taskname")
     private String title;
 
     @Column(name="description")
@@ -37,7 +37,9 @@ public class Task {
     private List<UserBoard> userBoard;
 
     public Task(String title, String description) {
-        this.title = title;
-        this.description = description;
+        setTitle(title);
+        setDescription(description);
     }
+
+    // task ima relaciju sa userboard one to many
 }

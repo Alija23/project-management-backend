@@ -1,11 +1,9 @@
 package xy.com.ProjectManagment.view.admin.controller;
 
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import xy.com.ProjectManagment.configuration.exception.FormElementError;
-import xy.com.ProjectManagment.configuration.exception.ResourceNotFoundException;
 import xy.com.ProjectManagment.module.project.dto.TaskDto;
 import xy.com.ProjectManagment.module.project.dto.UserDataDto;
 import xy.com.ProjectManagment.module.project.entity.Task;
@@ -13,14 +11,11 @@ import xy.com.ProjectManagment.module.project.entity.UserData;
 import xy.com.ProjectManagment.module.project.model.RegisterModel;
 import xy.com.ProjectManagment.module.project.model.UserDataBoardTaskModel;
 import xy.com.ProjectManagment.module.project.repository.UserDataRepository;
-import xy.com.ProjectManagment.module.project.service.TaskService;
 import xy.com.ProjectManagment.module.project.service.TaskServiceImpl;
 import xy.com.ProjectManagment.module.project.service.UserDataServiceImpl;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user-data-admin")
@@ -34,9 +29,9 @@ public class UserDataAdminController {
         this.taskService = taskService;
     }
     @PostMapping("/save-user")
-    public ResponseEntity<UserDataDto> saveAdmin(@RequestBody RegisterModel adminModel) {
-          userDataService.createAdminAccount(adminModel);
-          UserData userData = new UserData(adminModel);
+    public ResponseEntity<UserDataDto> saveAdmin(@RequestBody RegisterModel registerModel, BindingResult bindingResult) {
+          userDataService.createAccount(registerModel, bindingResult);
+          UserData userData = new UserData(registerModel);
           UserDataDto userDataDto = new UserDataDto(userData);
           return ResponseEntity.ok(userDataDto);
       }

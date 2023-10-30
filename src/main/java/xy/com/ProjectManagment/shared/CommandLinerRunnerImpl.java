@@ -1,7 +1,6 @@
 package xy.com.ProjectManagment.shared;
 
 import lombok.AllArgsConstructor;
-import org.antlr.v4.runtime.misc.LogManager;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -9,13 +8,10 @@ import xy.com.ProjectManagment.module.project.entity.Task;
 import xy.com.ProjectManagment.module.project.entity.UserBoard;
 import xy.com.ProjectManagment.module.project.entity.UserData;
 import xy.com.ProjectManagment.module.project.entity.UserRole;
-import xy.com.ProjectManagment.module.project.model.RegisterModel;
 import xy.com.ProjectManagment.module.project.repository.RoleRepository;
 import xy.com.ProjectManagment.module.project.repository.UserBoardRepository;
 import xy.com.ProjectManagment.module.project.repository.UserDataRepository;
-import xy.com.ProjectManagment.module.project.service.UserDataServiceImpl;
 
-import javax.management.relation.Role;
 import java.util.ArrayList;
 import java.util.List;
 

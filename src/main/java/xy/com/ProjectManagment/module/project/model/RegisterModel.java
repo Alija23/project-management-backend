@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import xy.com.ProjectManagment.module.project.entity.UserRole;
-import xy.com.ProjectManagment.shared.annotation.PasswordMatches;
 import xy.com.ProjectManagment.shared.annotation.UniqueEmail;
 import xy.com.ProjectManagment.shared.annotation.UniqueUsername;
 import xy.com.ProjectManagment.shared.annotation.ValidUserRole;
@@ -17,7 +16,6 @@ import xy.com.ProjectManagment.shared.annotation.ValidUserRole;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@PasswordMatches
 public class RegisterModel {
     @NotEmpty(message = "Username is required")
     @UniqueUsername(message = "Username is already in use")

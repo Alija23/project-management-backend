@@ -3,7 +3,6 @@ package xy.com.ProjectManagment.module.project.service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -44,10 +43,8 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
         Optional<UserData> userData = userDataRepository.findByUsername(username);
         if (userData.isEmpty()) {
         try {
-            FormElementError exception = new FormElementError("username", "notFound");
-            formElementError.add(exception);
-            throw new ResourceNotFoundException("User with username: " + username + " not found", formElementError);
-        } catch (ResourceNotFoundException ex) {
+            throw new UserFormInputException("User with username: " + username + " not found", formElementError);
+        } catch (UserFormInputException ex) {
            UserData userData1 = new UserData();
            userData1.setUsername("");
            userData1.setPassword(encoder.encode("dsagsd"));
@@ -56,45 +53,6 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
         }
 
         return userData.get();
-    }
-
-    @Override
-    @Transactional
-    public UserDataDto createAdminAccount(RegisterModel registerModel) {
-        UserRole userRole = roleService.getUserRoleByTitle(registerModel.getUserRole().getTitle());
-        registerModel.setUserRole(userRole);
-        UserBoard userBoard = new UserBoard();
-        List<FormElementError> formElementError = new ArrayList<>();
-        UserData userData = new UserData(registerModel);
-
-        try {
-            Optional<UserData> tmpUserData = userDataRepository.findByUsername(registerModel.getUsername());
-            if (tmpUserData.isPresent()) {
-                FormElementError exception = new FormElementError("username", "duplicate");
-                formElementError.add(exception);
-            }
-            tmpUserData = Optional.empty();
-            tmpUserData = userDataRepository.findByEmail(registerModel.getEmail());
-            if (tmpUserData.isPresent()) {
-                FormElementError exception = new FormElementError("email", "duplicate");
-                formElementError.add(exception);
-            }
-            if (!Objects.equals(registerModel.getPassword(), registerModel.getConfirmPassword())) {
-                FormElementError exception = new FormElementError("password", "notSame");
-                formElementError.add(exception);
-                throw new UserFormInputException("err", formElementError);
-            }
-            registerModel.setPassword(encoder.encode(registerModel.getPassword()));
-            userBoard.setUserData(userData);
-            userData.setPassword(encoder.encode(userData.getPassword()));
-            userDataRepository.save(userData);
-            userBoardRepository.save(userBoard);
-        } catch (DataIntegrityViolationException exception) {
-            throw new UserFormInputException("some error ocured", formElementError);
-        }
-
-        UserDataDto userDataDto = new UserDataDto(userData);
-        return userDataDto;
     }
 
     @Override
@@ -162,29 +120,7 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
     @Override
     @Transactional
     public UserDataDto createAccount(@Valid RegisterModel registerModel, BindingResult bindingResult) {
-        List<FormElementError> listFormElementError = new ArrayList<>();
-        if (bindingResult.hasErrors()) {
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                FormElementError formElementError = new FormElementError();
-                formElementError.setFieldName(fieldError.getField());
-                formElementError.setErrorMessage(fieldError.getDefaultMessage());
-                listFormElementError.add(formElementError);
-            }
-            if (registerModel.getConfirmPassword() != registerModel.getPassword()) {
-                FormElementError formElementError = new FormElementError();
-                formElementError.setFieldName("password");
-                formElementError.setErrorMessage("Passwords do not match");
-                listFormElementError.add(formElementError);
-                Object principalUserData = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                if (principalUserData == null || ( !Objects.equals(((UserData) principalUserData).getUserRole().getTitle(), "ADMIN") && Objects.equals(registerModel.getUserRole().getTitle(), "ADMIN")) ) {
-                    FormElementError formElementError1 = new FormElementError();
-                    formElementError.setFieldName("userRole");
-                    formElementError.setErrorMessage("Admin privilegies");
-                    listFormElementError.add(formElementError1);
-                }
-            }
-            throw new UserFormInputException("error", listFormElementError);
-        }
+        checkForErrors(registerModel, bindingResult);
         UserData userData = new UserData(registerModel);
         UserRole userRole = roleService.getUserRoleByTitle(registerModel.getUserRole().getTitle());
         userData.setUserRole(userRole);
@@ -196,5 +132,46 @@ public class UserDataServiceImpl implements UserDataService, UserDetailsService 
         UserDataDto userDataDto = new UserDataDto(userData);
         return userDataDto;
     }
+    void checkForErrors(RegisterModel registerModel, BindingResult bindingResult) {
+        List<FormElementError> listFormElementError = new ArrayList<>();
+        //check for password
+        if (!Objects.equals(registerModel.getConfirmPassword(), registerModel.getPassword())) {
+            FormElementError formElementError = new FormElementError();
+            formElementError.setFieldName("password");
+            formElementError.setErrorMessage("Passwords do not match");
+            listFormElementError.add(formElementError);
+        }
+        // check privileges
+        Object principalUserData = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!(principalUserData instanceof UserData) && Objects.equals(registerModel.getUserRole().getTitle(), "ADMIN")) {
+            FormElementError formElementError1 = new FormElementError();
+            formElementError1.setFieldName("userRole");
+            formElementError1.setErrorMessage("You don't have admin privileges");
+            listFormElementError.add(formElementError1);
+        } else if (principalUserData instanceof UserData){
+            UserData userData = (UserData) principalUserData;
+            if (
+                    Objects.equals(registerModel.getUserRole().getTitle(), "ADMIN") &&
+                            !Objects.equals(userData.getUserRole().getTitle(), "ADMIN")
 
+            ) {
+                FormElementError formElementError1 = new FormElementError();
+                formElementError1.setFieldName("userRole");
+                formElementError1.setErrorMessage("You don't have admin privileges");
+                listFormElementError.add(formElementError1);
+            }
+        }
+
+        if (bindingResult.hasErrors()) {
+            for (FieldError fieldError : bindingResult.getFieldErrors()) {
+                FormElementError formElementError = new FormElementError();
+                formElementError.setFieldName(fieldError.getField());
+                formElementError.setErrorMessage(fieldError.getDefaultMessage());
+                listFormElementError.add(formElementError);
+            }
+        }
+        if (!listFormElementError.isEmpty()) {
+            throw new UserFormInputException("error", listFormElementError);
+        }
+    }
 }
